@@ -10,6 +10,23 @@ This repository contains code for our paper: Improving Bias Mitigation through B
 | PoE (Sanh et al., 2021)  | 83.3 | 67.9 | 84.8 | 65.7 | 88.0 | 46.4 |
 | Bias Experts (ours)  | 82.7 | **72.6** | 85.6 | **68.1** | 86.8 | **58.1** |
 
+## Requirements
+- Python 3
+- Transformers
+- Numpy
+- PyTorch
+
+## Data
+Our experiments use MNLI dataset. Download the file from [here](https://cims.nyu.edu/~sbowman/multinli/), and unzip under the directory ./dataset The dataset directory should be structured as the following:
+```
+└── dataset 
+    └── MNLI
+        ├── train.tsv
+        ├── dev_matched.tsv
+        ├── dev_mismatched.tsv
+        ├── dev_mismatched.tsv
+```
+
 ## Running Experiments
 
     # Training bias experts
