@@ -21,4 +21,4 @@ This repository contains code for our paper: Improving Bias Mitigation through B
 ## Contact Info
 For help or issues using bias experts, please submit a GitHub issue.
 
-For personal communication related to our work, please contact Eojin Jeon `skdlcm456@korea.ac.kr` or Mingyu Lee `decon9201@korea.ac.kr`.
+For personal communication, please contact Eojin Jeon `skdlcm456@korea.ac.kr` or Mingyu Lee `decon9201@korea.ac.kr`.
