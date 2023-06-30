@@ -10,7 +10,7 @@ This repository contains code for our paper: Improving Bias Mitigation through B
 | PoE (Sanh et al., 2021)  | 83.3 | 67.9 | 84.8 | 65.7 | 88.0 | 46.4 |
 | Bias Experts (ours)  | 82.7 | **72.6** | 85.6 | **68.1** | 86.8 | **58.1** |
 
-## Running experiments
+## Running Experiments
 
     # Training bias experts
     bash run_last_layer_biased.sh
