@@ -28,6 +28,8 @@ Our experiments use MNLI dataset. Download the file from [here](https://dl.fbaip
 ```
 
 ## Running Experiments
+    # Training auxiliary model
+    bash run_dynamics.sh
 
     # Training bias experts
     bash run_last_layer_biased.sh
