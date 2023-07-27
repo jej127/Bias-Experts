@@ -634,6 +634,9 @@ def main():
         dynamics_dir = './dynamics'
         output_answer_dynamics_file = os.path.join(dynamics_dir, f"training_dynamics_{int(args.num_train_epochs)}_{args.train_data}.json")
 
+        if not exists(dynamics_dir):
+            os.makedirs(dynamics_dir)
+
         for _ in trange(int(args.num_train_epochs), desc="Epoch", ncols=100):
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
