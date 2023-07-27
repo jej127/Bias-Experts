@@ -3,13 +3,6 @@ We propose a new debiasing framework that introduces binary classifiers between 
 
 This repository contains code for our paper: Improving Bias Mitigation through Bias Experts in Natural Language Understanding. For a detailed description and experimental results, please refer to the paper.
 
-## Results
-| Method | MNLI-dev  | HANS | FEVER-dev | FEVER-symm | QQP-dev | PAWS |
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| BERT-base | 84.5 | 62.4 | 85.6 | 63.1 | 91.0 | 33.5 |
-| PoE (Sanh et al., 2021)  | 83.3 | 67.9 | 84.8 | 65.7 | 88.0 | 46.4 |
-| Bias Experts (ours)  | 82.7 | **72.6** | 85.6 | **68.1** | 86.8 | **58.1** |
-
 ## Requirements
 - Python 3
 - Transformers
@@ -36,6 +29,13 @@ Our experiments use MNLI dataset. Download the file from [here](https://dl.fbaip
 
     # Training the main model
     bash run_last_layer1.sh
+
+## Expected Results
+Results on MNLI and HANS
+| Seed | MNLI-dev  | HANS |
+| ------------- | ------------- | ------------- |
+| 206 | 82.9 | 73.8 |
+| 211 | 82.8 | 73.1 |
 
 ## Contact Info
 .
