@@ -38,6 +38,4 @@ Our experiments use MNLI dataset. Download the file from [here](https://dl.fbaip
     bash run_last_layer1.sh
 
 ## Contact Info
-For help or issues using bias experts, please submit a GitHub issue.
-
-For personal communication, contact Eojin Jeon `skdlcm456@korea.ac.kr` or Mingyu Lee `decon9201@korea.ac.kr`.
+.
