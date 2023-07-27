@@ -57,20 +57,19 @@ class BertForReweighting(BertPreTrainedModel):
         self.dropout = nn.Dropout(classifier_dropout)
         self.classifier = nn.Linear(config.hidden_size, self.num_labels)
         self.loss_fn = nn.CrossEntropyLoss(reduction='none')
-        self.loss_fn2 = nn.CrossEntropyLoss()
         self.post_init()
 
-    def forward(self, input_ids, attention_mask=None, token_type_ids=None, labels=None, teacher_probs=None, bias=None):
+    def forward(self, input_ids, attention_mask=None, token_type_ids=None, labels=None, confidence=None, teacher_probs=None, bias=None):
         outputs = self.bert(input_ids, attention_mask, token_type_ids)
         pooled_output = outputs[1]
         logits = self.classifier(self.dropout(pooled_output))
         if labels is None : return logits
 
-        loss_ce = self.loss_fn2(logits.view(-1, self.num_labels), labels.view(-1))
         loss = self.loss_fn(logits.view(-1, self.num_labels), labels.view(-1))
+        loss_ce = loss.mean()
         one_hot_labels = nn.functional.one_hot(labels, num_classes=self.num_labels).float()
         weights = 1 - (one_hot_labels * teacher_probs).sum(1)
-        return self.lamda * loss_ce + (weights * loss).sum() / weights.sum(), logits
+        return self.lamda * loss_ce + (weights * loss).mean(), logits
     
 class BertForConfidenceRegulation(BertPreTrainedModel):
     def __init__(self, config, lamda=0.3):
@@ -84,7 +83,7 @@ class BertForConfidenceRegulation(BertPreTrainedModel):
         self.loss_fn = nn.CrossEntropyLoss()
         self.post_init()
 
-    def forward(self, input_ids, attention_mask=None, token_type_ids=None, labels=None, teacher_probs=None, bias=None):
+    def forward(self, input_ids, attention_mask=None, token_type_ids=None, labels=None, confidence=None, teacher_probs=None, bias=None):
         outputs = self.bert(input_ids, attention_mask, token_type_ids)
         pooled_output = outputs[1]
         logits = self.classifier(self.dropout(pooled_output))

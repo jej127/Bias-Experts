@@ -1,5 +1,5 @@
 #!/bin/sh
-n=3
+n=1
 
 #For MNLI
 learning_rate=3e-5
@@ -9,25 +9,6 @@ training_dynamics_path='./dynamics/training_dynamics_5_MNLI.json'
 weight_decay=0.1
 bert_model='google/bert_uncased_L-2_H-128_A-2'
 num_train_epochs=3.0
-
-#For FEVER
-#learning_rate=2e-5
-#warmup_steps=1000
-#train_data='FEVER'
-#training_dynamics_path='./dynamics/training_dynamics_5_FEVER.json'
-#weight_decay=0.1
-#bert_model='google/bert_uncased_L-2_H-128_A-2'
-#num_train_epochs=3.0
-
-#For QQP
-#learning_rate=2e-5
-#warmup_steps=2000
-#train_data='QQP'
-#training_dynamics_path='./dynamics/training_dynamics_5_QQP.json'
-#weight_decay=0.1
-#bert_model='google/bert_uncased_L-2_H-128_A-2'
-#num_train_epochs=4.0
-
 
 seed=111
 q=0.20

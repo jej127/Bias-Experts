@@ -24,6 +24,7 @@ from tqdm import trange, tqdm
 from predictions_analysis import visualize_predictions
 import csv
 from bert_poe import BertForClassification, BertForOnevsRest, BertForOnevsRest_td, BertForPOE, BertForPOE_annealed
+from bert_poe import BertForReweighting, BertForConfidenceRegulation
 from torch.utils.data import DataLoader, Dataset, Sampler, RandomSampler, SequentialSampler
 from tensorboardX import SummaryWriter
 
@@ -589,7 +590,7 @@ def main():
     parser.add_argument("--sorted", action="store_true",
                         help='Sort the data so most batches have the same input length,'
                              ' makes things about 2x faster.')
-    parser.add_argument("--mode", type=str, required=True, choices=['vn', 'bin', 'bin_td', 'poe', 'poe_old', 'poe_ann'],
+    parser.add_argument("--mode", type=str, required=True, choices=['vn', 'bin', 'bin_td', 'poe', 'poe_ann', 'rw', 'cr'],
                         help='vn : vanilla BERT, cf : Counterfactual mode')
     parser.add_argument("--sample", type=int, default=-1,
                         help='sample or not')
@@ -646,6 +647,7 @@ def main():
     train_examples = None
     if args.do_train:
         if args.train_data == 'MNLI' :
+            args.tau = 1.45
             train_examples = load_mnli(True) if args.sample <= 0 else load_mnli(True, seed=args.seed, sample=args.sample)
         elif args.train_data == 'FEVER' :
             train_examples = load_fever(True) if args.sample <= 0 else load_fever(True, seed=args.seed, sample=args.sample)
@@ -672,7 +674,6 @@ def main():
     elif args.mode == 'bin_td' :
         if args.do_train:
             label_weight = [[ex.label for ex in train_examples].count(i) for i in range(num_labels)]
-            label_weight = [5,5,5]
             label_weight = torch.tensor(label_weight).to(device) / sum(label_weight)
             print(label_weight)
         else:
@@ -683,6 +684,10 @@ def main():
     elif args.mode == 'poe_ann' : 
         model = BertForPOE_annealed.from_pretrained(args.bert_model, num_labels=num_labels, lamda=args.lamda, min_a=min_a, max_a=max_a,
                                                     total_steps=int(num_train_optimization_steps)).to(device)
+    elif args.mode == 'rw' :
+        model = BertForReweighting.from_pretrained(args.bert_model, num_labels=num_labels, lamda=args.lamda).to(device)
+    elif args.mode == 'cr' : 
+        model = BertForConfidenceRegulation.from_pretrained(args.bert_model, num_labels=num_labels, lamda=args.lamda).to(device)
 
     # Prepare optimizer
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
@@ -707,7 +712,7 @@ def main():
         tr_loss = 0
         train_features: List[InputFeatures] = convert_examples_to_features(train_examples, args.max_seq_length, tokenizer, args.n_processes)
 
-        if 'poe' in args.mode:
+        if any([s in args.mode for s in ['poe','cr','rw']]):
             teacher_probs_map = load_teacher_probs(args.custom_teacher)
             for fe in train_features:
                 teacher_logits = np.array(teacher_probs_map[fe.example_id]).astype(np.float32)
@@ -744,7 +749,8 @@ def main():
             pbar = tqdm(train_dataloader, desc="loss", ncols=100)
             for step, batch in enumerate(pbar):
                 batch = tuple(t.to(device) for t in batch)
-                if 'poe' in args.mode:
+                if any([s in args.mode for s in ['poe','cr','rw']]):
+                    confidence = None
                     example_ids, input_ids, mask, segment_ids, label_ids, teacher_probs = batch
                 elif args.mode == 'bin_td':
                     teacher_probs = None
@@ -765,7 +771,7 @@ def main():
                 total_steps += 1
                 loss_ema = loss_ema * decay + loss.cpu().detach().numpy() * (1 - decay)
                 if args.mode == 'poe_ann': 
-                    a = model.current_a.cpu().detach().numpy()
+                    a = model.current_a
                     descript = "loss=%.4f, a=%.4f" % (loss_ema / (1 - decay ** total_steps),a)
                 else: descript = "loss=%.4f" % (loss_ema / (1 - decay ** total_steps))
                 pbar.set_description(descript, refresh=False)
@@ -819,6 +825,10 @@ def main():
             model = BertForPOE.from_pretrained(args.bert_model, num_labels=num_labels).to(device)
         elif args.mode == 'poe_ann' : 
             model = BertForPOE_annealed.from_pretrained(args.bert_model, num_labels=num_labels).to(device)
+        elif args.mode == 'rw' :
+            model = BertForReweighting.from_pretrained(args.bert_model, num_labels=num_labels).to(device)
+        elif args.mode == 'cr' : 
+            model = BertForConfidenceRegulation.from_pretrained(args.bert_model, num_labels=num_labels).to(device)
         model.load_state_dict(torch.load(output_model_file))
 
     else:
@@ -833,6 +843,10 @@ def main():
             model = BertForPOE.from_pretrained(args.bert_model, num_labels=num_labels).to(device)
         elif args.mode == 'poe_ann' : 
             model = BertForPOE_annealed.from_pretrained(args.bert_model, num_labels=num_labels).to(device)
+        elif args.mode == 'rw' :
+            model = BertForReweighting.from_pretrained(args.bert_model, num_labels=num_labels).to(device)
+        elif args.mode == 'cr' : 
+            model = BertForConfidenceRegulation.from_pretrained(args.bert_model, num_labels=num_labels).to(device)
         model.load_state_dict(torch.load(output_model_file))                  
     model.eval()
 
@@ -946,7 +960,7 @@ def main():
                     json.dump(data_confidence, f)
 
     # Writing summary
-    if 'poe' in args.mode:
+    if any([s in args.mode for s in ['poe','cr','rw']]):
         output_all_eval_file = os.path.join(output_dir, f"eval_all_results.txt")
         with open(output_all_eval_file, "a") as all_writer:
             all_writer.write(f"eval results all in one ({args.postfix}):\n")
