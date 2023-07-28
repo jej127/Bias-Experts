@@ -30,7 +30,7 @@ Our experiments use MNLI dataset. Download the file from [here](https://dl.fbaip
     # Training the main model
     bash run_last_layer1.sh
 
-## Expected Results
+## Results
 Results on MNLI and HANS
 | Seed | MNLI-dev  | HANS |
 | ------------- | ------------- | ------------- |
