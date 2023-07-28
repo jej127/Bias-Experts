@@ -10,7 +10,7 @@ This repository contains code for our paper: Improving Bias Mitigation through B
 - PyTorch
 
 ## Data
-Our experiments use MNLI dataset. Download the file from [here](https://dl.fbaipublicfiles.com/glue/data/MNLI.zip), and unzip under the directory ./dataset The dataset directory should be structured as the following:
+Our experiments use MNLI dataset. Download the file from [here](https://dl.fbaipublicfiles.com/glue/data/MNLI.zip), and unzip under the directory ./dataset. The dataset directory should be structured as the following:
 ```
 └── dataset 
     └── MNLI
