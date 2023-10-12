@@ -39,4 +39,6 @@ Results on MNLI and HANS
 | 222 | 82.7 | 72.6 |
 
 ## Contact Info
-.
+For help or issues, please submit a GitHub issue.
+
+For personal communication, please contact Eojin Jeon <skdlcm456@korea.ac.kr> or Mingyu Lee <decon9201@korea.ac.kr>.
