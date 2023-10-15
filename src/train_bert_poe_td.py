@@ -647,7 +647,7 @@ def main():
     train_examples = None
     if args.do_train:
         if args.train_data == 'MNLI' :
-            args.tau = 1.45
+            #args.tau = 1.45
             train_examples = load_mnli(True) if args.sample <= 0 else load_mnli(True, seed=args.seed, sample=args.sample)
         elif args.train_data == 'FEVER' :
             train_examples = load_fever(True) if args.sample <= 0 else load_fever(True, seed=args.seed, sample=args.sample)
@@ -667,13 +667,15 @@ def main():
     elif args.mode == 'bin' :
         if args.do_train:
             label_weight = [[ex.label for ex in train_examples].count(i) for i in range(num_labels)]
+            label_weight = [1.0,1.0,1.0]
             label_weight = torch.tensor(label_weight).to(device) / sum(label_weight)
+            print(label_weight)
         else:
             label_weight = None
         model = BertForOnevsRest.from_pretrained(args.bert_model, num_labels=num_labels, label_weight=label_weight).to(device)
     elif args.mode == 'bin_td' :
         if args.do_train:
-            label_weight = [[ex.label for ex in train_examples].count(i) for i in range(num_labels)]
+            label_weight = [[ex.label for ex in train_examples].count(i) for i in range(num_labels)]  
             label_weight = torch.tensor(label_weight).to(device) / sum(label_weight)
             print(label_weight)
         else:
@@ -949,15 +951,15 @@ def main():
             with open(output_answer_file, "w") as f:
                 json.dump(answers, f)
 
-            if args.train_data == 'MNLI':
-                pba_ov, pbc_ov, pba_ng, pbc_ng, outliers = compute_prediction(answers, args.tau)
-                a1,a2,b1,b2 = np.mean(pba_ov), np.mean(pbc_ov), np.mean(pba_ng), np.mean(pbc_ng)
-                logging.info("  Biased predictions | Overlaps | BA : %.4f | BC : %.4f | difference : %.4f", a1, a2, a1-a2)
-                logging.info("  Biased predictions | Negation | BA : %.4f | BC : %.4f | difference : %.4f", b1, b2, b1-b2)
-                data_confidence = {'ba_ov':pba_ov, 'bc_ov':pbc_ov, 'ba_ng':pba_ng, 'bc_ng':pbc_ng}
-                output_confidence_file = os.path.join(output_dir, "eval_confidence_%s.json" % args.mode)
-                with open(output_confidence_file, "w") as f:
-                    json.dump(data_confidence, f)
+            # if args.train_data == 'MNLI':
+            #     pba_ov, pbc_ov, pba_ng, pbc_ng, outliers = compute_prediction(answers, args.tau)
+            #     a1,a2,b1,b2 = np.mean(pba_ov), np.mean(pbc_ov), np.mean(pba_ng), np.mean(pbc_ng)
+            #     logging.info("  Biased predictions | Overlaps | BA : %.4f | BC : %.4f | difference : %.4f", a1, a2, a1-a2)
+            #     logging.info("  Biased predictions | Negation | BA : %.4f | BC : %.4f | difference : %.4f", b1, b2, b1-b2)
+            #     data_confidence = {'ba_ov':pba_ov, 'bc_ov':pbc_ov, 'ba_ng':pba_ng, 'bc_ng':pbc_ng}
+            #     output_confidence_file = os.path.join(output_dir, "eval_confidence_%s.json" % args.mode)
+            #     with open(output_confidence_file, "w") as f:
+            #         json.dump(data_confidence, f)
 
     # Writing summary
     if any([s in args.mode for s in ['poe','cr','rw']]):
