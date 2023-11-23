@@ -13,7 +13,7 @@ This repository contains code for our paper: Improving Bias Mitigation through B
 Our experiments use MNLI dataset. Download the file from [here](https://dl.fbaipublicfiles.com/glue/data/MNLI.zip), and unzip under the directory ./dataset. The dataset directory should be structured as the following:
 ```
 └── dataset 
-    └── MNLI
+    └── glue_multinli
         ├── train.tsv
         ├── dev_matched.tsv
         ├── dev_mismatched.tsv
