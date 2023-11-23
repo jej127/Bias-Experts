@@ -18,7 +18,7 @@ Our experiments use MNLI and HANS dataset. Download the file for MNLI from [here
             ├── train.tsv
             ├── dev_matched.tsv
             ├── dev_mismatched.tsv
-            └── dev_mismatched.tsv
+            
         └── hans
             ├── heuristics_evaluation_set.txt
 ```
