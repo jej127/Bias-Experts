@@ -36,9 +36,10 @@ Our experiments use MNLI and HANS dataset. Download the file for MNLI from [here
 Results on MNLI and HANS
 | Seed | MNLI-dev  | HANS |
 | ------------- | ------------- | ------------- |
-| 206 | 82.9 | 73.8 |
-| 211 | 82.8 | 73.1 |
-| 222 | 82.7 | 72.6 |
+| 206 | 82.6 | 72.4 |
+| 211 | 82.7 | 73.0 |
+| 222 | 82.6 | 72.0 |
+| 234 | 83.0 | 73.6 |
 
 ## Contact Info
 For help or issues, please submit a GitHub issue.
